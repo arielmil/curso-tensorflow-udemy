@@ -1,0 +1,59 @@
+Regressão Linear:
+
+O que é?
+
+Tipo de problema aonde quer-se que a maquina aprenda a traçar uma reta que representa a melhor relação linear entre um grupo de atributos (entrada da função), e uma saída.
+
+Nota: Para isso, provavelmente é necessário que os atributos realmente tenham uma relação de linearidade com a saída.
+
+Ex: Quer-se aprender uma função para estimar o custo do plano de saúde de uma pessoa a partir da sua idade, baseada em um banco com N entradas, cada uma com a idade de uma pessoa, e o custo de seu plano de saúde.
+
+Pode-se representar este tipo de relacionamento linear em um gráfico aonde o eixo x representa o grupo de atributos (Neste caso não é um vetor de atributos, é apenas uma escalar (Idade)), e o eixo y a saída (neste caso, um float com o custo anual do plano de saúde).
+
+Quer então aprender-se qual a melhor equação linear y = a*x + b que associem y a x. As previsões são feitas a partir de um aprendizado de qual é o valor mais próximo de a e de b.
+
+Guia-se o quão próximo a função está do melhor valor a partir de uma função de erro formulada da seguinte forma:
+
+ErroI = (valor_real - valor_estimadoI)² aonde valor_estimado = a*xi + b, valor_real = yi
+
+Erro_Total = Somatório_Todos_Erros/Total_de_Previsões
+
+(Calculo de erro usando Mean Square Error (MSE) (É elevado ao ² para punir mais pesadamente erros maiores, o quanto maior ele é, maior é para ser a "punição")
+
+Esse aprendizado é feito usando um algorítimo chamado de Descida do gradiente (Gradiente Descent) que funciona da seguinte forma:
+
+	1: Procurando minimizar o valor de saída (Erro_Total) da função que calcula o MSE de todas as iterações do algorítimo de aprendizado o algorítimo começa inicializando valores aleatórios para a e b em y = ac + b.
+
+	2: Para a próxima iteração, calcula-se o gradiente das "váriaveis" a e b na função MSE:
+
+		Derivada parcial de a na MSE:
+
+			D(MSE)/da = D/da * ( ( (yi - a*xi + b)² ) para todo i)/N ( | N é o número de previsões / número de dados) que aplicando a regra da cadeia:
+
+			(2*(yi - (b + a*xi)) * D/da*(yi - (b + a*xi)) para todo i)/N
+
+			D/da*(yi - (b + a*xi)) = k1i' - k2' -(a*k3)' = -(a'*k3 + a*k3') = -(k3) = -xi
+
+			Então (2*(yi - (b + a*xi)) * D/da*(yi - (b + a*xi)) para todo i)/N = ( (2*(yi - (b + a*xi) * -xi) para todo i)/N
+
+			= ( (-2 * xi * (yi - (b + a*xi) para todo i) ) ) / N 
+
+		Similarmente, a de b em MSE é:
+
+			( (2*(yi - (b + a*xi) * -1) para todo i)/N
+			
+			= ( (-2 * (yi - (b + a*xi) para todo i) ) ) / N
+		
+	3: Com as derivadas calculadas, se atualiza os valores de a e b da seguinte forma:
+
+	novo_a = a - alfa*(D(MSE)/da)
+	novo_b = b - alfa*(D(MSE)/db)
+
+	aonde alfa é a taxa de aprendizado, que é um hyperparametro ajustável.
+
+	4: Baseado nos novos a e b, repete-se o processo M vezes até encontrar valores de a e b satisfatórios (que Minimizem suficientemente bem a função de MSE).
+
+OBS: Utilizar os gradientes funciona dessa forma pois o gradiente é um vetor que aponta para a direção de maior crescimento em uma função a partir do ponto que estamos. Como fazemos novo_a = a -alfa * D(MSE)/Da, o sinal de - inverte a direção dos gradientes de D(MSE)/Da, e D(MSE)/Db, e eles passam a apontar para a direção de maior decrescimento a partir de onde estamos (OU seja, seguindo ele, estamos andando em direção a uma diminuição na curva.). A taxa de aprendizado alfa serve para evitar que se de passos muito longos (Andando demais da direção oposta ao gradiete) o que pode fazer o algorítimo pular o ponto mínimo global, ou que se de passos muito pequenos, e acabe-se chegando em um mínimo local ou a um ponto inadequado para calcular o valor de (a, b).
+
+OBS2: É necessário que os atributos tenham uma relação de linearidade com a saída. Isso é fundamental, e sempre vale a pena explorar visualmente os dados para verificar essa suposição antes de aplicar a regressão linear.
+
