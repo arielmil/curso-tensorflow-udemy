@@ -44,7 +44,7 @@ def multiple_gradient_descent(x, y, epochs, learning_rate, coeficients, debug=Fa
         errors = np.append(errors, error)
 
         #Calcula o gradiente para cada coeficiente
-        #o .T é para fazer a transposta da matriz x.
+        #o .T é para fazer a transposta da matriz x. (Transformando uma matriz MxN em uma matriz NxM)
         #O .dot é para fazer o produto escalar entre x e y - y_pred.
         #como x contém o valor 1 em todas as linhas para a última coluna, o produto escalar entre essa coluna e y - y_pred é igual a: 
         # -2 * (y - (a1*x1 + a2*x2 + ... + a(n-1)x(n-1) + an)) (Como na função de descida de gradiente simples)
