@@ -30,17 +30,19 @@ def simple_gradient_descent(x, y, epochs, learning_rate, a, b, debug=False):
 #Função que faz a descida de gradiente para um número qualquer de variaveis independentes.
 #x contém todos os valores das variaveis independentes.
 #y contém o valor da váriavel dependente.
-def multiple_gradient_descent(x, y, epochs, learning_rate, coeficients, batch_size = None, debug=False):
+def multiple_gradient_descent(x, y, epochs, learning_rate, coeficients, batch_size = False, debug=False):
     errors = np.array([])
     
-    if batch_size is not None:
+    '''
+    if batch_size:
 
-        #gera batch números aleatórios para que a descida de gradiente seja feita em batchs.
+        #gera sbatch números aleatórios para que a descida de gradiente seja feita em batchs.
         random_indexes = np.random.choice(x.shape[0], batch_size, replace=False)
         
         #Para cada valor i em random_batches, faz X = x[i] e Y = y[i]
         new_x = [x[i] for i in random_indexes]
         new_y = [y[i] for i in random_indexes]
+    '''
 
         
     
@@ -102,7 +104,7 @@ def multiple_gradient_descent_wrapper(X, y, epochs, learning_rate, debug=False):
     plt.title('Erros x epochs')
     plt.show()
 
-    return coeficients, errors, previsions
+    return coeficients, errors, previsions, scaler_y
 		
 		
 		
