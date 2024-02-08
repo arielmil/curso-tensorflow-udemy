@@ -1,0 +1,94 @@
+Regressão Logística entre duas classes:
+
+O que é:
+
+Tipo de problema aonde se quer a maquina aprenda a traçar uma curva que melhor relaciona um grupo de atributos (entrada da função) e a qual classe (0 ou 1) a qual um determinado conjunto desses atributos pertence.
+
+Nota: Para isso é necessário uma função que retorne algum número real x = [0, 1], e que exista uma relação não caótica entre os atributos e a distribuição entre as classes. O que quer-se é que a função aprenda e uma curva que melhor representa a probabilidade de um conjunto de atributos pertencer a classe 0 ou 1.
+
+Ex: Quer-se aprender uma função para determinar qual a probabilidade de uma pessoa pagar ou não sua conta bancária em dia baseando-se na sua idade. Neste caso.
+
+Pode-se formar um gráfico cartesiano aonde o eixo x representa a idade de cada pessoa, e o eixo y tem as classes (nesse caso, 0 e 1). Ou seja, nesse gráfico, existiram pontos apentas no formato: (x, y) aonde x é um número real com a idade, e y = {0, 1}.
+
+O algorítimo de regressão logística começa então rodando um algorítimo de regressão linear para traçar a melhor reta Y = a*idade + b. O algorítimo de regressão linear é por si só insuficiente para este tipo de problema, pois a reta que ele gerou pode váriar entre números menores que 0 (o limite inferior), e 1 (o limite superior).
+
+Precisando-se de uma função que apenas pode retornar um Y ∈ R | Y = [0, 1], utiliza-se a função sigmóide cuja formula é:
+
+Ys = S(Y) = 1 / (1 + e^(-Y))
+
+Neste caso, Y = a*idade + b, com os a's e b's aprendidos durante a regressão linear ou seja:
+
+S(Y) = 1 / (1 + e ^(-(a * idade + b) ) )
+
+A função S(Y) efetivamente aplica uma transformação em Y que tentava capturar a melhor relação linear entre os pontos do gráfico, em Ys que tenta capturar a melhor relação sigmóide entre os pontos do gráfico, usando como base a equação que retorna Y.
+
+É então aplicado uma função de Erro a qual busca-se otimizar para que ao fim de N iterações (epochs), o algorítimo tenha encontrado os melhores a e b que permita gerar a melhor função sigmóide a partir da função linear.
+
+A função de erro se chama Perda Logarítima, e é formulada da seguinte forma:
+
+Perda = - [y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)] | y = {0, 1}, e y_previsto = S(Y), ou seja, y_previsto = qualquer número entre 0 e 1.
+
+Explicação da formulação da função perda:
+
+ln(y_previsto): retorna um número entre (-inf, 1]
+	A medida que y_previsto se aproxima de 1, ln(y_previsto) também se aproxíma, até que ln(y_previsto = 1) = 1.
+	A medida que y_previsto se aproxima de 0, ln(y_previsto) se aproxima de -inf, ou seja, quanto mais próximo de 0 y_previsto for, maior será o valor de ln(y_previsto).
+	
+ln(1 - y_previsto): retorna um número entre (-inf, 0]
+	A medida que y_previsto se aproxima de 1, ln(1 - y_previsto) vai se aproximando de -inf, (pois ln(x-->0) se aproxima de -inf)
+	A medida que y_previsto se aproxima de 0, ln(1 - y_previsto) vai se tornando ln(1 - x --> 0) que se aproxima de ln(1 - 0) = ln(1) = 0
+
+y: valor que é exclusívamente 0 ou 1 (contém as classes)
+	Então (1 - y) = 1 <- y = 0
+									0 <- y = 1
+
+y*ln(y_previsto) será:
+	se y = 1, e y_previsto se aproxima de 1, então y*ln(y_previsto) = 1*numero_próximo_de_1 = número_próximo_de_1 (previsão correta)
+	se y = 1, e y_previsto se aproxima de 0, então y*ln(y_previsto) = 1*número_que_se_aproxima_de_-inf = número_que_se_aproxima_de_-inf (previsão errada)
+	
+	Ou seja, se y = 1 e a previsão estiver certa, um número próximo de 1 será retornado
+	se estiver errada, um número que se aproxíma de -inf a medida que y_previsto se aproxma de 0 será retornado.
+	
+	se y = 0, e y_previsto se aproxima de 1, então y*ln(y_previsto) = 0*numero_próximo_de_1 = 0 (previsão errada porém será mult por 0.)
+	se y = 0, e y_previsto se aproxima de 0, então y*ln(y_previsto) = 0*numero_que_se_aproxima_de_-inf = 0 (previsão correta, porém será mult por 0.)
+	
+	Ou seja, independente de estar certa ou errada, 0 será retornado.
+
+(1 - y)*ln(1 - y_previsto) será:
+	se y = 1, e y_previsto se aproxima de 1, então (1 - y)*ln(1 - y_previsto) = 0*ln(x --> 0) = 0*número_que_se_aproxima_de_-inf = 0 (previsão correta, porém será mult por 0.)
+	se y = 1, e y_previsto se aproxima de 0, então (1 - y)*ln(1 - y_previsto) = 0*ln(x --> 1) = 0*número_que_se_aproxima_de_1 = 0 (previsão errada, porém será mult por 0.)
+	
+	Ou seja, independente de estar certa ou errada, 0 será retornado.
+	
+	se y = 0, e y_previsto se aproxima de 1, então (1 - y)*ln(1 - y_previsto) = 1*ln(x --> 0) = 1*número_que_se_aproxima_de_-inf = número_que_se_aproxima_de_-inf (previsão errada)
+	se y = 0, e y_previsto se aproxima de 0, então (1 - y)*ln(1 - y_previsto) = 1*ln(x --> 1) = 1*número_que_se_aproxima_de_1 = número_que_se_aproxima_de_1 (previsão correta)
+	
+	Ou seja, se y = 0, e a previsão estiver certa, um número proxímo de 1 será retornado
+	se estiver errada, um número que e aproxima de -inf será retornado
+	
+Então -[y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)] será:
+	se y = 1, e y_previsto se aproxima de 1 (previsão certa):
+		- {y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)} = - {1*ln(x --> 1) + 0*ln(x --> 0)} = - {1*ln(x-->1) + 0} = -número_que_se_aproxima_de_1
+	
+	se y = 1, e y_previsto se aproxima de 0 (previsão errada):
+		- {y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)}
+		= - {[1*número_que_se_aproxima_de_-inf] + 0*ln(x --> 1)} = - {número_que_se_aproxima_de_-inf + 0*número_que_se_aproxima_de_1} = -número_que_se_aproxima_de_-inf
+		= número_que_se_aproxima_de_+inf
+		
+	se y = 0, e y_previsto se aproxima de 1 (previsão errada):
+		- {y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)} = - {0*ln(x --> 1) + 1*ln(x --> 0)} = - {0*número_que_se_aproxima_de_1 + 1*número_que_se_aproxima_de_-inf}
+		= - {0 + número_que_se_aproxima_de_-inf} = número_que_se_aproxima_de_+inf
+	
+	se y = 0, e y_previsto se aproxima de 0 (previsão certa):
+		- {y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)} = - {0*ln(x --> 0) + 1*ln(x --> 1)} = - {0*número_que_se_aproxima_de_-inf + 1*número_que_se_aproxima_de_1}
+		= - {0 + número_que_se_aproxima_de_1} = -número_que_se_aproxima_de_1
+	
+O algorítimo então computará a média de erros da seguinte forma:
+
+{ - [yi*ln(yi_previsto) + (1 - yi)*ln(1 - yi_previsto)] para todo i}/N, aonde N é o número de registros que o algorítimo está sendo treinado (número de i's)
+
+Ao final, quanto mais proximas as previsões forem de estiverem erradas, maior vai ser o número de vezes em que números próximos de +inf serão somados a média (contribuíndo muito para o erro), e quanto mais proximas as previsisões forem de estiverem certas, maior vai ser o número de vezes em que números próximos de 1 serão somados a média (contribuindo pouquíssímo para o erro).
+
+Ao final de cada epoca, a descida do gradiente estocastica (SGE) como nos regressores lineares, porém dessa vez é aplicado em cima da função de perda logarítima, para que sejam encontrados valores para os coeficientes cada vez mais próximos dos melhores (convergência).
+
+Só falta tentar entender por que (supondo que para todos os casos o previsor acerte com 0.0 de erro), então o erro será: (1 * M)/M = 1, porém deveria ser 0...
