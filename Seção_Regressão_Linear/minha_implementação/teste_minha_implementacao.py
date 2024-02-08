@@ -1,4 +1,4 @@
-from minha_implementacao import multiple_gradient_descent_wrapper, mean_absolute_error
+from Seção_Regressão_Linear.minha_implementação.meu_regressor_linear import multiple_gradient_descent_wrapper, mean_absolute_error
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
