@@ -56,39 +56,37 @@ y*ln(y_previsto) será:
 
 (1 - y)*ln(1 - y_previsto) será:
 	se y = 1, e y_previsto se aproxima de 1, então (1 - y)*ln(1 - y_previsto) = 0*ln(x --> 0) = 0*número_que_se_aproxima_de_-inf = 0 (previsão correta, porém será mult por 0.)
-	se y = 1, e y_previsto se aproxima de 0, então (1 - y)*ln(1 - y_previsto) = 0*ln(x --> 1) = 0*número_que_se_aproxima_de_1 = 0 (previsão errada, porém será mult por 0.)
+	se y = 1, e y_previsto se aproxima de 0, então (1 - y)*ln(1 - y_previsto) = 0*ln(x --> 1) = 0*-número_que_se_aproxima_de_0 = 0 (previsão errada, porém será mult por 0.)
 	
 	Ou seja, independente de estar certa ou errada, 0 será retornado.
 	
 	se y = 0, e y_previsto se aproxima de 1, então (1 - y)*ln(1 - y_previsto) = 1*ln(x --> 0) = 1*número_que_se_aproxima_de_-inf = número_que_se_aproxima_de_-inf (previsão errada)
-	se y = 0, e y_previsto se aproxima de 0, então (1 - y)*ln(1 - y_previsto) = 1*ln(x --> 1) = 1*número_que_se_aproxima_de_1 = número_que_se_aproxima_de_1 (previsão correta)
+	se y = 0, e y_previsto se aproxima de 0, então (1 - y)*ln(1 - y_previsto) = 1*ln(x --> 1) = 1*-número_que_se_aproxima_de_0 = -número_que_se_aproxima_de_0 (previsão correta)
 	
 	Ou seja, se y = 0, e a previsão estiver certa, um número proxímo de 1 será retornado
 	se estiver errada, um número que e aproxima de -inf será retornado
 	
 Então -[y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)] será:
 	se y = 1, e y_previsto se aproxima de 1 (previsão certa):
-		- {y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)} = - {1*ln(x --> 1) + 0*ln(x --> 0)} = - {1*ln(x-->1) + 0} = -número_que_se_aproxima_de_1
+		- {y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)} = - {1*ln(x --> 1) + 0*ln(x --> 0)} = - {1*ln(x-->1) + 0} = --número_que_se_aproxima_de_0 = número_que_se_aproxima_de_0
 	
 	se y = 1, e y_previsto se aproxima de 0 (previsão errada):
 		- {y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)}
-		= - {[1*número_que_se_aproxima_de_-inf] + 0*ln(x --> 1)} = - {número_que_se_aproxima_de_-inf + 0*número_que_se_aproxima_de_1} = -número_que_se_aproxima_de_-inf
+		= - {[1*número_que_se_aproxima_de_-inf] + 0*ln(x --> 1)} = - {número_que_se_aproxima_de_-inf + 0*-número_que_se_aproxima_de_0} = -número_que_se_aproxima_de_-inf
 		= número_que_se_aproxima_de_+inf
 		
 	se y = 0, e y_previsto se aproxima de 1 (previsão errada):
-		- {y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)} = - {0*ln(x --> 1) + 1*ln(x --> 0)} = - {0*número_que_se_aproxima_de_1 + 1*número_que_se_aproxima_de_-inf}
+		- {y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)} = - {0*ln(x --> 1) + 1*ln(x --> 0)} = - {0*-número_que_se_aproxima_de_0 + 1*número_que_se_aproxima_de_-inf}
 		= - {0 + número_que_se_aproxima_de_-inf} = número_que_se_aproxima_de_+inf
 	
 	se y = 0, e y_previsto se aproxima de 0 (previsão certa):
-		- {y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)} = - {0*ln(x --> 0) + 1*ln(x --> 1)} = - {0*número_que_se_aproxima_de_-inf + 1*número_que_se_aproxima_de_1}
-		= - {0 + número_que_se_aproxima_de_1} = -número_que_se_aproxima_de_1
+		- {y*ln(y_previsto) + (1 - y)*ln(1 - y_previsto)} = - {0*ln(x --> 0) + 1*ln(x --> 1)} = - {0*número_que_se_aproxima_de_-inf + 1*-número_que_se_aproxima_de_0}
+		= - {0 + -número_que_se_aproxima_de_0} = --número_que_se_aproxima_de_0 = número_que_se_aproxima_de_0
 	
 O algorítimo então computará a média de erros da seguinte forma:
 
 { - [yi*ln(yi_previsto) + (1 - yi)*ln(1 - yi_previsto)] para todo i}/N, aonde N é o número de registros que o algorítimo está sendo treinado (número de i's)
 
-Ao final, quanto mais proximas as previsões forem de estiverem erradas, maior vai ser o número de vezes em que números próximos de +inf serão somados a média (contribuíndo muito para o erro), e quanto mais proximas as previsisões forem de estiverem certas, maior vai ser o número de vezes em que números próximos de 1 serão somados a média (contribuindo pouquíssímo para o erro).
+Ao final, quanto mais proximas as previsões forem de estiverem erradas, maior vai ser o número de vezes em que números próximos de +inf serão somados a média (contribuíndo extremamente para o erro), e quanto mais proximas as previsisões forem de estiverem certas, maior vai ser o número de vezes em que números próximos de 0 serão somados a média (contribuindo pouquíssímo para o erro).
 
 Ao final de cada epoca, a descida do gradiente estocastica (SGE) como nos regressores lineares, porém dessa vez é aplicado em cima da função de perda logarítima, para que sejam encontrados valores para os coeficientes cada vez mais próximos dos melhores (convergência).
-
-Só falta tentar entender por que (supondo que para todos os casos o previsor acerte com 0.0 de erro), então o erro será: (1 * M)/M = 1, porém deveria ser 0...
