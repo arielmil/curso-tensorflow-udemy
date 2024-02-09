@@ -1,4 +1,4 @@
-from Seção_Regressão_Linear.minha_implementação.meu_regressor_linear import multiple_gradient_descent
+from meu_regressor_linear import multiple_gradient_descent
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -17,8 +17,12 @@ def multiple_logistic_regression(x, y, epochs, learning_rate, coeficients, debug
     errors = np.array([])
     
     for i in range(epochs):
-        x_with_ones = np.c_[np.ones(x.shape[0]), x]
-        coeficients = multiple_gradient_descent(x_with_ones, y, coeficients, learning_rate)
+        x_with_ones = np.c_[x, np.ones(x.shape[0])]
+
+        #Calcula a equação linear que queremos transformar em uma função de probabilidade por uma epoch.
+        coeficients, _ = multiple_gradient_descent(x_with_ones, y, 1, learning_rate, coeficients)
+
+        #Calcula a reta linear que queremos transformar em uma função de probabilidade, ou seja reta y = a1*x1 + a2*x2 + ... + an*xn + b
         reta_linear = np.dot(x_with_ones, coeficients)
 
         #Deslineariza a reta transformando ela numa função de sigmoid (retiorna valores entre 0 e 1, que é o que queremos para uma função de probabilidade)
@@ -28,19 +32,17 @@ def multiple_logistic_regression(x, y, epochs, learning_rate, coeficients, debug
         
         #Gradiente da função log_loss em relação aos coeficientes (ver depois por que as derivadas parciais de log_loss em relacao aos coefs deu isso.)
         #Fazer uma outra versão que gere a função gradiente automaticamente.
-        gradient = np.dot(x.T, (y_pred - y)) / y.size
+        gradients = np.dot(x_with_ones.T, (y_pred - y)) / y.size
         
-        coeficients -= learning_rate * gradient
-        
+        #Atualiza os coeficientes com o gradiente da função log_loss em relação aos coeficientes.
+        coeficients = coeficients - learning_rate * gradients
+
         if debug:
             print(f"Epoch: {i}, Error: {error}, Coeficients: {coeficients}")
 
     return coeficients, errors
 
 def multiple_logistic_regression_wrapper(x, y, epochs, learning_rate, debug=False):
-    #Adiciona uma coluna de 1s para o coeficiente de b
-    coeficients = np.random.rand(x.shape[1])
-
     #Para cada coluna de atributos, que é um tipo de dado categórico, transforma em um número inteiro.
     #Isso é necessário para que a função sigmoid funcione.
     for i in range(x.shape[1]):
@@ -57,17 +59,33 @@ def multiple_logistic_regression_wrapper(x, y, epochs, learning_rate, debug=Fals
     scaler_x = StandardScaler()
     scaled_x = scaler_x.fit_transform(x)
 
+    #Adiciona uma coluna de 1s para o coeficiente de (soma 1 para contar com o coeficiente b)
+    coeficients = np.random.rand(x.shape[1] + 1)
+
+    if debug:
+        print(f"x.shape: {x.shape}")
+        print(f"coeficients.shape: {coeficients.shape}")
+        print(f"coeficients antes de multiple_logistic_regression: {coeficients}")
+
     coeficients, errors = multiple_logistic_regression(scaled_x, y, epochs, learning_rate, coeficients, debug)
+
+    if debug:
+        print(f"coeficients.shape: {coeficients.shape}")
+        print(f"coeficients depois de multiple_logistic_regression: {coeficients}")
+        print(f"erors: {errors}")
+        print(f"erors.mean(): {errors.mean()}")
+        print(f"errors.shape: {errors.shape}")
+
 
     #Retransforma o atributo em y em um atributo categorico.
     if (type(y[0]) == str):
         y = label_encoder_y.inverse_transform(y)
 
     #Plota um gráfico do erro em relação as épocas.
-    plt.plot(errors)
     plt.title('Erro por época')
     plt.xlabel('Época')
     plt.ylabel('Erro')
+    plt.plot(range(epochs), errors)
     plt.show()
     
     return coeficients, errors
