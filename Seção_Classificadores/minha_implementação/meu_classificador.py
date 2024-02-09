@@ -13,13 +13,18 @@ def log_loss(y, y_pred):
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
+
 def multiple_logistic_regression(x, y, epochs, learning_rate, coeficients, debug=False):
     errors = np.array([])
+
+    x_with_ones = np.c_[x, np.ones(x.shape[0])]
+
+    #Começa calculando uma reta que seja relativamente boa para transformar em uma função de probabilidade.
+    coeficients, _ = multiple_gradient_descent(x_with_ones, y, 100, learning_rate, coeficients)
     
     for i in range(epochs):
-        x_with_ones = np.c_[x, np.ones(x.shape[0])]
 
-        #Calcula a equação linear que queremos transformar em uma função de probabilidade por uma epoch.
+        #Calcula a equação linear que queremos transformar em uma função de probabilidade por uma epoch a partir dos coeficientes definidos acima.
         coeficients, _ = multiple_gradient_descent(x_with_ones, y, 1, learning_rate, coeficients)
 
         #Calcula a reta linear que queremos transformar em uma função de probabilidade, ou seja reta y = a1*x1 + a2*x2 + ... + an*xn + b
