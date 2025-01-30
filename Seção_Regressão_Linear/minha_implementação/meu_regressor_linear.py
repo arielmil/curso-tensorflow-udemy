@@ -20,8 +20,8 @@ def simple_gradient_descent(x, y, epochs, learning_rate, a, b, debug=False):
         
         errors = np.append(errors, error)
 
-        gradient_a = -2 * (x * (y - (b + a * x) ) ).mean()
-        gradient_b = -2 * (y - (b + a * x)).mean()
+        gradient_a = -2 * (x * (y - y_pred ) ).mean()
+        gradient_b = -2 * (y - y_pred).mean()
     
         a = a - learning_rate * gradient_a
         b = b - learning_rate * gradient_b
