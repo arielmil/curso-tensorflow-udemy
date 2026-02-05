@@ -1,0 +1,8 @@
+1: Aparentemente placeholders não existem mais
+
+2: Fazer:
+
+    import tensorflow.compat.v1 as tf
+    tf.disable_v2_behavior()
+
+para usar o tf v1 dentro do tf v2

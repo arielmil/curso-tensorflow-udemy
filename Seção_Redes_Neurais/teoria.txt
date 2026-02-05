@@ -1,0 +1,223 @@
+Perceptron:
+
+    Neuronio formado por um nó e seus pesos
+    Um nó contém um valor interno, e os pesos associados a ele
+
+    Possúi uma função soma, e uma função de ativação
+
+    A função de ativação mais simples é uma função f cujo:
+
+        f(x <= 0) = 0
+        f(x > 0)  = 1
+    
+    O perceptron então faz o seguinte calculo passando para a função de ativação:
+
+    x = valor_de_cada_no_associado * peso_de_cada_aresta
+
+    Exemplo:
+
+        
+    (n1)
+      \
+       \ p1
+        \
+          (Soma + bias) ---> Ativação(Output para o próximo neuronio)
+        /  
+       / p2
+      /
+    (n2)
+
+    Soma = n1*p1 + n2*p2 + bias
+
+    Resultado = f(n1*p1 + n2*p2 + bias) = Ativação(n1*p1 + n2*p2 + bias)
+
+    Função de erro:
+
+        Pega-se a rede neural em treinamento, e avalia-se o quão adaptada ela está para resolver o problema em questão
+        Uma função de erro comúm é:
+
+        ErroTotal = Média(Erros) = Somatório(Erro[0...n]) / n | n : numero de neuronios na camada
+        Erro[i] = Valor_Real - Valor_estimado_pela_rede_neural
+
+        O objetivo do treinamento é minimizar a função de erro, baseando-se em encontrar o valor mais adaptado possível dos pesos.
+
+
+Redes Multi camadas:
+
+    Problemas linearmente separaveis:
+
+        Problemas aonde se pode traçar uma reta linear no gráfico da função a ser aprendida, 
+        e com essa reta, é possível separar os resultados em classes distintas
+    
+    Problemas não linearmente separaveis:
+
+        Problemas aonde não se pode separar as classes dos resultados com uma reta linear
+    
+    Função sigmoide:
+
+        Um outro exemplo de função de ativação
+
+        f(x) = 1/(1 + e^-x)
+
+    Camadas ocultas:
+
+        Camadas da rede neural que ficam entre a camada de entrada e a camada de saída.
+        Servem para introduzir não linearidade e devem ser usados em problemas aonde não é possível resolver-los linearmente.
+        Por exemplo, problemas de classificação aonde não é possível separar as N classes do problema usando apenas uma reta linear
+
+        OBS: Depois gostaria de entender melhor matemáticamente / algébricamente, como exatamente as camadas ocultas modificam o shape da função para ela se tornar menos linear.
+
+    Descida do gradiente:
+
+        Técnica usada para minimizar a função erro fazendo um vetor gradiente:
+
+        [∂E(xi)/∂xi], aonde E(x): Função Erro, e xi, uma das i váriaveis / dimensões do problema
+
+        Esse vetor aponta na direção de maior crescimento da função E(x) (Fç Erro),
+        logo deve-se inverter ele para que ele aponte na direção de maior decrescimento:
+
+        - [∂E(xi)/∂xi]
+
+        Coloca-se também um parametro learning rate (l) para controlar o quão rápido a rede neural treina,
+        controlando o quanto a função "caminha" na direção contrária do gradiente calculada em cima da função erro,
+        para evitar cair em mínimos locais:
+
+        - l*[∂E(xi)/∂xi]
+        
+        A rede neural treina por back propagation, fazendo várias iterações e calculando os pesos tal que:
+
+        w[i+1] = wi - l*[∂E(xi)/∂xi]
+
+        a medida que E(xi) minimiza, wi fica cada vez mais ajustado ao seu valor ideal, que justamente é o que minimiza E(xi),
+        e isso é feito para cada xi e wi.
+
+        a adequação de w ocorre pois l*[∂E(xi)/∂xi] pode apontar para qualquer um dos lados (valores maiores que w ideal),
+        (ou valores menores que o w ideal). Assim w[i + 1] deve estar mais próximo do w ideal do que w[i].
+
+    Delta:
+
+        (Ver como usar o parametro e para que o parametro serve)
+
+        Delta da camada de saída:
+            
+            (Neste exemplo a camada de saída possúi apenas um único neuronio), logo: Erro = ValorEstimado - Ativação(Somatório)
+            
+            DeltaNeuronioSaida = Erro * f'(somatorio)
+
+        
+        Delta das camadas escondidas:
+
+            Cada neuronio de cada camada escondida vai possuir seu próprio delta, ele é calculado como:
+
+            DeltaNeuronioEscondido = PesoArestaSaída * DeltaNeuronioSaida * f'(somatorio)
+        
+        Existe uma relação entre o delta e a descida de gradiente:
+
+            Acredito que a formula dada para o Delta, é parte da fórmula para o algoritimo de descida do gradiente
+
+            Acredito que DeltaNeuronioSaida = Erro * f'(somatorio), é igual ao gradiente do Erro de Saída,
+            e Acredito que DeltaNeuronioEscondigo = PesoArestaSaída * DeltaNeuronioSaida * f'(somatorio) é igual ao gradiente de algo nas camadas ocultas
+
+            (Ver melhor posteriormente qual é essa relação)
+    
+    Back Propagation:
+
+        Algoritimo que serve para realizar o ajuste dos pesos.
+
+        Primeiro ele propaga os dados para a frente na rede neural (Com o fluxo natural entre camadas).
+        Depois ele volta e ajusta o peso em cada neuronio de cada camada durante o treinamento.
+
+        Como é calculado:
+
+            Para cada aresta em cada neuronio de cada camada, faz-se:
+
+                PesoNovo = PesoAntigo * momento + Somatório(Entrada * delta) * LearningRate
+                (Ver o que é esse momento, e qual a diferença dele para o LearningRate)
+
+
+    Descida do gradiente em batch:
+
+        Faz uma única descida para todas as entradas da base (Calcula o erro global de todas),
+        e ai atualiza os pesos baseando-se neste valor.
+    
+        pode ser feita selecionando também um grupo de entradas de tamanho N para usar de cada vez.
+        Quando isso é feito, chama-se Descida do gradiente em batch-mini.
+
+    Descida do gradiente estocastica (SGD):
+
+        Para cada entrada na base, calcula o erro e ai atualiza os pesos  baseando-se neste valor.
+
+        Isso ajuda a previnir os mínimos locais, e é mais rápido pois não precisa carregar todos os dados na memória
+        
+
+    Funções de ativação:
+
+        São elas que introduzem não linearidade ao problema, pois uma combinação linear de funções lineares, ainda é linear.
+
+        - Step function (Função degrau):
+
+            Usada para problemas linearmente separaveis.
+
+            f(x) = 1 <--> x >= 1
+            f(x) = 0 <--> x  < 1
+
+        - Sigmoid:
+
+            f(x) = 1 / 1 + e^-x
+
+            Usada para retornar probabilidades (por retornar valores entre 0 e 1).
+            Um de seus principais usos é na classificação de problemas binários (separar em duas classes)
+
+        - Tangente Hiperbólica:
+
+            f(x) = (e^x - e^-x) / (e^x + e^-x)
+
+            Retorna valores entre -1 e 1
+
+            Também pode ser usada para classificação, e sua vantagem é que ela pode mapear valores negativos para entradas negativas.
+
+        - ReLU ( Rectified linear units):
+
+            f(x) = max(0, x)
+
+            Retorna o máximo entre 0 e o valor de entrada, ou seja:
+
+            f(x) = x <--> x  > 0
+            f(x) = 0 <--> x <= 0
+
+            Muito usadas em redes neurais convulacionais, e redes neurais profundas (redes neurais com muitas camadas).
+            
+            Não deve ser usada em problemas com muitas entradas negativas, por que mapeia 0 para todos eles.
+
+
+        - Linear:
+
+            f(x) = x
+
+            Muito usada em problemas de regressão linear
+
+        - Softmax:
+
+            f(x1, x2, ... , xn) = e^xi/somatório(e^xi)
+
+            Muito utilizada em probabilidades em problemas de mais de duas classes (Ex: prever qual é uma cor)
+
+            Retorna probabilidades para cada uma das classes do problema.
+            Quanto maior um valor no vetor de entrada, maior sua probabilidade
+
+    Sobre o tensorflow playground:
+
+        Site para testar configurações de redes neurais aonde pode-se selecionar a função de ativiação das camadas,
+        o número de camadas ocultas, o número de neuronios em cada uma delas.
+
+        Pode-se também selecionar se o problema será de regressão ou classificação, e selecionar algumas bases de dados já pré carregadas para treinar em cima.
+        O objetivo é ver qual a rede neural mais simples que melhor se adapta ao seu problema em questão,
+        pode-se verificar isso pelo número de épocas que leva para a rede neural chegar a um loss baixo, e verificar o valor do loss em sí.
+
+        Dúvidas:
+
+            - Como saber o formato da minha base de dados? No Playground tem formatos bem definidos, mas não necessáriamente a minha BD vai ser assim.
+            - Como criar a intuição para saber qual a melhor rede neural que se adapta ao meu problema? Eu terei um gráfico que mostra a minha BD,
+              parecido como é no tensorflow playground para ir ajustando?
+
+        
