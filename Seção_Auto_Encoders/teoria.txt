@@ -1,0 +1,96 @@
+Auto encoders são redes neurais que aprendem a codificar registros, e a decodificar-los.
+
+Eles treinam em um registro de self supervised learning, aonde não existe um dataset com labels,
+mas as "labels" para medir a acuracia e perda, são os próprios registros originais.
+
+Ou seja, quando um registro é codificado e posteriormente decodificado, a rede verifica a sua acuracia vendo o quão próximo o valor decodificado está do registro original.
+
+Casos de uso:
+
+    Diminuição do tamanho (em bytes) de dados:
+
+        A rede pode processar um conjunto de dados e produzir uma codificação para eles que possúi um tamanho menor do que os registros originais.
+        Posteriormente quando desejar-se obter os registros originais a partir da codificação, basta decodificar-los.
+        Esse processo funciona analogamente a compactação de arquivos.
+
+    Aumento do tamanho dos dados:
+
+        A rede processa dados de maneira similar ao caso acima, porém ao invés de criar uma codificação com tamanho menor,
+        criam codificações que são de tamanho maior do que os registros originais.
+        
+        isso pode ser feito para transformar os dados pequenos em dados maiores,
+        e assim poder usar-los para capturar padrões mais ricos e detalhes finos neles
+        Também tende a tornar os dados mais separáveis dentro de um espaço latente.
+
+
+Por via de regra, o tamanho da camada de entrada precisa ser igual ao tamanho da camada de saída,
+já que a idéia da rede é justamente produzir um output que seja muito próximo do input ao decodificar-lo.
+
+Intuição de como funcionam:
+
+    Para o 1o caso de uso acima,
+
+    Camadas ocultas parecem possuir menos neuronios do que as de entrada (e saida).
+    Isso ocorre por que é justamente nas camadas ocultas que ocorre a codificação,
+    a decodificação ocorre apenas na ultima camada.
+    Pode ser necessario o uso de funções de ativação na ultima camada para isso.
+
+    O fato de as camadas ocultas possuirem menos neuronios que as de entrada e saida,
+    ocorre por que o valor codificado deve ter tamanho menor do que o registro de entrada, e o valor decodificado.
+
+    Já para o 2o caso de uso, é ao contrário. Camadas ocultas devem possuir mais neuronios que as entradas e saidas.
+    Isso pode gerar problemas na rede, por que ela pode simplesmente aprender a copiar a entrada para as camadas ocultas de acordo com o seu treinamento e distribuição dos pesos.
+
+
+Algusns tipos de autoe encoders:
+
+    Sparce autoencoder:
+
+        Feito para solucuionar o problema descrito para o 2o caso de uso:
+
+        Um dos mais populares e basicos.
+        usa uma técnica de regularização para prevenir overfitting.
+        Não usa todos os neuronios de uma camada oculta,
+        desligando aleatoriamente alguns neuronios toda vez que é feito o processamento de um batch,
+        ou de um registro(Dropout?)
+
+    Denoising autoencoder:
+
+        Modifica os valores da camada de entrada, alterando alguns neuronios para o valor zero.
+        Diferentes neuronios são zerados em diferentes forwards.
+
+        Assim como nos outros autoencoders,
+        quando os pesos são atualizados, a camada de saída é comparada aos valores originais para obter o valor do erro.
+        
+    Contractive autoencoder:
+
+        Adiciona uma função de penalidade quando os pesos são atualizados, por isso tem uma tendencia melhor a se adaptar aos dados.
+
+    Deep autoencoder / Stack autoencoder:
+
+        Versão profunda (deep) dos autoencoders:
+
+            Possui uma estrutura de funil aonde cada camada posterior possui menos neuronios que a camada anterior,
+            isso "comprime" os dados até um máximo que é uma camada oculta que possuí a menor representação dos registros codificados.
+            Esses registros codificados no menor tamanho, são chamados de compressed feature vector.
+
+            Após isso, a estrutura vira de funil inverso, aonde cada camada posterior possúi mais neuronios que a camada anterior,
+            ou seja, os dados são descomprimidos. Até que os dados cheguem a camada de saída que possuí mesmo numero de neuronios que a de entrada.
+
+            As camadas em funil que codificam os dados são chamados de encoders.
+            As camadas em funil inverso que decodificam os dados são chamados de decoders.
+
+    Convolutional autoencoder:
+
+        Versão de autoencoers para CNN.
+
+        Cada camada oculta é uma camada de convolução (que pode estar associada a "subcamadas" de normalização, ativação, e pooling),
+        ou camada de deconvolução.
+
+        Pode-se também juntar com o caso deep encoder, ou seja: Fazer uma estrutura de funil até a camada de flattening,
+        depois fazer camadas de deconvolução até chegar na imagem original novamente.
+
+        Exemplo (Sem normalização e pooling):
+
+        Imagem original --> Conv1(Stride = 2) --> Conv2(Stride = 2) --> Conv3 (Stride = 2) --> Flatten,
+        --> Fully connected --> Reshape --> DeConv3(Stride = 2) --> DeConv2(Stride = 2) --> DeConv1(Stride = 2) --> Imagem decodificada.
