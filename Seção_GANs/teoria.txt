@@ -1,0 +1,59 @@
+GANs são redes neurais que podem criar por elas mesmas.
+
+Baseando-se no dataset em que ela foi treinada, uma GAN pode criar novos registros que não existem no dataset original. (Analogo a imaginação)
+
+Usos:
+
+    Aumento de resolução de uma imagem
+
+    Desenho automatico:
+
+        Usuário coloca como input um esboço de um desenho, e a GAN gera a partir disso uma imagem baseada nesse esboço
+        Se o usuário desenhar o esboço de uma montanha, a rede ira colocar uma montanha na imagem,
+        se o usuário desenhar o esboço de grama, a rede ira colocar grama na imagem.
+
+    Pode criar imagens a partir de texto, ou texto a partir de texto.
+
+    Colocar cores em imagens.
+
+    Colocar uma foto que foi tirada de noite, como se tivesse sido tirada de dia.
+
+    Converter uma imagem de um mapa aereo, em um mapa estilo Google Maps (Sem detalhes)
+
+Processo de aprendizagem das GANs:
+
+    Uma GAN geralmente possúi dois componentes:
+
+        O Componente gerador:
+
+            Gera imagens / textos etc.
+
+        O Componente Discriminador:
+
+            Acessa as imagens / textos etc criadas para avaliar o quão parecidas elas são com as originais do dataset.
+
+        Ambos começam "do zero" e o gerador precisa aprender a gerar dados semelhantes aos do dataset em que ele foi treinado,
+        e o discriminador precisa aprender a avaliar esses dados gerados.
+        
+        Ambos são redes neurais.
+
+    
+    Treinamento:
+
+        Em cada batch para cada epoca, ocorre o seguinte processo:
+
+        O discriminador recebe como input imagens (ou texto) com exemplos daquilo que o gerador deve gerar, e exemplos "errados".
+        Por exemplo, se o objetivo for treinar o gerador para gerar imagens de cachorros, o discriminador irá receber imagens reais de cachorros, e de não cachorros.
+
+        O gerador recebe dados aleatórios (ruido), e em cada camada vai aplicando transformações, até ter como output uma imagem
+        Essa imagem no ínicio será completamente aleatória.
+
+        A imagem gerada é passada para o discriminador que retornará em sua ultima camada uma probabilidade (Aplicação de Sigmoid), que representa a veracidade da imagem gerada.
+        Ou seja, se a imagem gerada é ou não parecida com as imagens em que o discriminador foi treinado para "classificar"
+
+        No exemplo dos cachorros, o discriminador deve avaliar o quão próxima a imagem gerada está de ser de um cachorro.
+
+        O discriminador então atua como a função erro do gerador
+
+        O gerador aprende a minimizar essa função erro, e o discriminador a maximizar a acuracia de verificar se o input recebido é ou não parecido com os exemplos do dataset em que ele foi treinado.
+
